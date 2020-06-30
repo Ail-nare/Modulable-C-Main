@@ -1,4 +1,4 @@
-# Modulable-C-Main
+# Modulable-CXX-Main
 
 Usage:
     - Include the MainC++.hpp ONLY in the file that define the main (ex: 'main.cpp').

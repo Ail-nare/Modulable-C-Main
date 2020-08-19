@@ -13,39 +13,46 @@
                     int mainCPP(__VA_ARGS__)
 
 
-template <typename f, typename ...>
-struct st_first_arg {
-    typedef f first;
-};
+inline int declMain(int, char **, char **, int (*mainFunc)())
+{
+    return mainFunc();
+}
 
-template <typename ...Ts>
-using first_arg = typename st_first_arg<Ts...>::first;
+template <typename T, typename std::enable_if<std::is_arithmetic<T>::value, int>::type=0>
+inline int declMain(int ac, char **, char **, int (*mainFunc)(T))
+{
+    return mainFunc(ac);
+}
 
-template <typename ...Ts>
+template <typename T, typename std::enable_if<!std::is_arithmetic<T>::value, int>::type=0>
+inline int declMain(int, char **av, char **, int (*mainFunc)(T))
+{
+    return mainFunc(av);
+}
+
+template <typename T1, typename T2, typename std::enable_if<std::is_arithmetic<T1>::value, int>::type=0>
+inline int declMain(int ac, char **av, char **, int (*mainFunc)(T1, T2))
+{
+    return mainFunc(ac, av);
+}
+
+template <typename T1, typename T2, typename std::enable_if<!std::is_arithmetic<T1>::value, int>::type=0>
+inline int declMain(int, char **av, char **env, int (*mainFunc)(T1, T2))
+{
+    return mainFunc(av, env);
+}
+
+template <typename ...Ts, typename std::enable_if<(sizeof...(Ts) == 3), int>::type=0>
 inline int declMain(int ac, char **av, char **env, int (*mainFunc)(Ts...))
 {
+    return mainFunc(ac, av, env);
+}
+
+template <typename ...Ts, typename std::enable_if<(sizeof...(Ts) > 3), int>::type=0>
+inline int declMain(int, char **, char **, int (*)(Ts...))
+{
     static_assert(sizeof...(Ts) <= 3, "Your main can't have more than 3 arguments as parameters");
-    if constexpr (sizeof...(Ts) == 0) {
-        return mainFunc();
-    } else if constexpr (sizeof...(Ts) == 1) {
-        if constexpr (std::is_arithmetic<first_arg<Ts...>>::value) {
-            return mainFunc(ac);
-        } else {
-            return mainFunc(av);
-        }
-    } else if constexpr (sizeof...(Ts) == 2) {
-        if constexpr (std::is_arithmetic<first_arg<Ts...>>::value) {
-            return mainFunc(ac, av);
-        } else {
-            return mainFunc(av, env);
-        }
-    } else if constexpr (sizeof...(Ts) == 3) {
-        return mainFunc(ac, av, env);
-    }
-    (void)ac;
-    (void)av;
-    (void)env;
-    (void)mainFunc;
+    return 0;
 }
 
 #endif //CXX_MAIN_HPP

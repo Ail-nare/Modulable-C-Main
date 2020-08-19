@@ -1,5 +1,7 @@
 # Modulable-CXX-Main
 
+`Minimal version C++11`
+
 Usage:
 
  - Include the MainC++.hpp ONLY in the file that define the main (ex: 'main.cpp').
@@ -13,7 +15,7 @@ Example:
     #include <iostream>
     
     // This main will display every argument
-    int main(const Args args) // class Args is a std::vector<std::string> whiwh can be construct with a (char **)
+    int main(const Args args) // class Args is a std::vector<std::string> which can be construct with a (char **)
     {
         for (const auto &arg : args)
             std::cout << arg << std::endl;
